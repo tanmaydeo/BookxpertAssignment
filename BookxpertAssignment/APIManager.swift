@@ -27,4 +27,48 @@ enum APIError: Error {
     }
 }
 
+enum HTTPMethod : String {
+    case get = "GET"
+    case post = "POST"
+}
 
+final class APIManager {
+    
+    static let sharedInstance : APIManager = APIManager()
+    private init() {
+    }
+    
+    func fetchResponse(url: String,headers: [String: String],httpMethod: HTTPMethod, success: @escaping (_ responseData: [ProductModel]) -> Void,failure: @escaping (_ error: APIError) -> Void) {
+        
+        guard let apiURL = URL(string: url) else {
+            return
+        }
+        
+        var urlRequest = URLRequest(url: apiURL)
+        urlRequest.allHTTPHeaderFields = headers
+        urlRequest.httpMethod = httpMethod.rawValue
+        
+        let task = URLSession(configuration: .default).dataTask(with: urlRequest) { data, response, error in
+            if let error = error {
+                failure(.customError(error))
+                return
+            }
+            
+            guard let data = data else {
+                failure(.invalidData)
+                return
+            }
+            
+            do {
+                let decodedData = try JSONDecoder().decode([ProductModel].self, from: data)
+                success(decodedData)
+            } catch {
+                print("Decoding Error: \(error)")
+                failure(.customError(error))
+            }
+            
+        }
+        task.resume()
+        
+    }
+}
