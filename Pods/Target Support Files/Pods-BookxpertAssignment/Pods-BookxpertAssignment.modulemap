@@ -1,0 +1,6 @@
+framework module Pods_BookxpertAssignment {
+  umbrella header "Pods-BookxpertAssignment-umbrella.h"
+
+  export *
+  module * { export * }
+}
