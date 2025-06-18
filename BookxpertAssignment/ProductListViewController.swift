@@ -14,6 +14,7 @@ class ProductListViewController: UIViewController {
     private var productsArray : [ProductModel] = [] {
         didSet {
             DispatchQueue.main.async {
+                
                 self.productsTableView.reloadData()
                 self.activityIndicatorView.stopAnimating()
             }
